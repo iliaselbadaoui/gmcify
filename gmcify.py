@@ -3,10 +3,23 @@ from urllib.request import urlopen
 import json
 import sys
 import html2text
+import pandas as pd
 from xmler import xmler
 
-if len(sys.argv) != 2:
-    print("Provide a store link")
+def find_gtin(brand:str):
+    file = pd.read_csv(sys.argv[2])
+
+    gtin = file.loc[file['brand'] == brand.lower()].get('gtin')
+
+    if(len(gtin.to_numpy()) == 0):
+        return ''
+    else:
+        return str(gtin.to_numpy()[0])
+
+if len(sys.argv) != 3:
+    print("error parsing the command")
+    print("example: python3.10 gmcify.py [store_link]/products.json gtin.csv")
+    print("csv format [brand, gtin]")
     sys.exit()
 
 url = sys.argv[1]
@@ -38,6 +51,7 @@ for prod in data_json:
     cp_prod['description'] = h2t.handle(prod.get('body_html'))
     cp_prod['g:price'] = prod.get('variants')[0].get('price')
     cp_prod['g:brand'] = prod.get('vendor')
+    cp_prod['g:gtin'] = find_gtin(prod.get('vendor'))
     Item.append(cp_prod)
 
 RSS = {
