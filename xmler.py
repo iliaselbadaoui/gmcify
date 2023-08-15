@@ -15,9 +15,7 @@ def xmler(doc_object, xml_doc_str=None, ver='1.0', encode='utf-8'):
                         attr = attr + f' {attr2}="'+doc_object[prop][key]+'"'
             xml_doc = xml_doc + attr + ">"
             xml_doc = xmler(doc_object[prop], xml_doc)
-        if type(doc_object[prop]) == str and not prop.startswith('@'):
-            xml_doc = xml_doc + f'\n<{prop}>{doc_object[prop]}</{prop}>'
-        if type(doc_object[prop]) == list:
+        elif type(doc_object[prop]) == list:
             lst = doc_object[prop]
             for i in range(0, len(lst)):
                 item = lst[i]
@@ -27,7 +25,9 @@ def xmler(doc_object, xml_doc_str=None, ver='1.0', encode='utf-8'):
                         xml_doc = xml_doc + f'\n<{key}>{item[key]}</{key}>'
                     xml_doc = xmler(item, xml_doc)
                 xml_doc = xml_doc + f'\n</{prop}>'
-        if type(doc_object[prop]) == dict:
+        elif type(doc_object[prop]) == dict:
             xml_doc = xml_doc + f'\n</{prop}>'
+        elif type(doc_object[prop]) == str and not prop.startswith('@'):
+            xml_doc = xml_doc + f'\n<{prop}>{doc_object[prop]}</{prop}>'
 
     return xml_doc
